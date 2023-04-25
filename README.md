@@ -5,6 +5,7 @@ Run command for generate urls
 ```commandline
 search
 search search.cnt=2 # for 2 urls
+search 'search.query="лекции таймкоды"' search.cnt=2 # override cyrillic (more quotes)
 ```
 
 Run command for subscrape urls
