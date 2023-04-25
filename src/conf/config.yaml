@@ -1,0 +1,8 @@
+search:
+  output_folder: data
+  result_file: urls.txt
+  cnt: 10
+  query: машинное обучение лекции таймкоды
+
+scraper:
+  output_folder: ${search.output_folder}/dataset
