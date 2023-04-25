@@ -20,8 +20,8 @@ def main(cfg: DictConfig) -> None:
         urls = list(dict.fromkeys(s.strip() for s in f.readlines()))
 
     ydl_opts = {
-        # 'writesubtitles': True,
         # 'subtitleslangs': ['ru'],
+        # 'writesubtitles': True,
         'chapter': True,
         'format': 'm4a/bestaudio/best',
         # 'postprocessors': [{  # Extract audio using ffmpeg

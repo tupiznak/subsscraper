@@ -1,9 +1,16 @@
 [tool.poetry]
-name = "subscraper"
-version = "0.1.0"
+name = "subsscraper"
+version = "0.1.1"
 description = ""
 authors = ["tupiznak <akej-vonavi@mail.ru>"]
 readme = "README.md"
+packages = [
+    { include = "src" },
+]
+
+[tool.poetry.scripts]
+search = "src.search:main"
+subscrape = "src.subscraper:main"
 
 [tool.poetry.dependencies]
 python = "^3.10"
