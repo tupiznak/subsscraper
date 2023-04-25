@@ -17,7 +17,7 @@ def main(cfg: DictConfig) -> None:
 
     urls_path = Path(cfg.search.output_folder) / cfg.search.result_file
     with open(urls_path) as f:
-        urls = [s.strip() for s in f.readlines()]
+        urls = list(dict.fromkeys(s.strip() for s in f.readlines()))
 
     ydl_opts = {
         # 'writesubtitles': True,
@@ -29,7 +29,7 @@ def main(cfg: DictConfig) -> None:
         #     'preferredcodec': 'm4a',
         # }]
         'paths': dict(home=str(tmp_path)),
-        'outtmpl': 'video.%(ext)s'
+        'outtmpl': 'audio.%(ext)s'
     }
     with YoutubeDL(ydl_opts) as ydl:
         for url in urls:
@@ -39,7 +39,6 @@ def main(cfg: DictConfig) -> None:
 
             video_info = ydl.extract_info(url, download=False)
             video_id = video_info['id']
-
             path = output_path / video_id
             if path.exists():
                 logger.warning(f'Video {video_info.get("id")} downloaded. Skipping.')
@@ -71,7 +70,7 @@ def main(cfg: DictConfig) -> None:
                 duration=video_info['duration_string'],
                 chapters=chapters,
             )
-            json.dump(summary, open(tmp_path / 'info.json', 'w', encoding='utf8'), ensure_ascii=False)
+            json.dump(summary, open(tmp_path / 'info.json', 'w', encoding='utf8'), ensure_ascii=False, indent=2)
 
             subs = requests.get(subs_link).json()
             json.dump(subs, open(tmp_path / 'subs.json', 'w', encoding='utf8'), ensure_ascii=False)
@@ -79,7 +78,6 @@ def main(cfg: DictConfig) -> None:
             ydl.download(url)
 
             shutil.move(tmp_path, path)
-            break
 
 
 if __name__ == '__main__':
