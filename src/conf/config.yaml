@@ -15,3 +15,5 @@ search:
 
 scraper:
   output_folder: ${search.output_folder}/dataset
+  audio_format: m4a
+  lvl: audio # text, audio, video

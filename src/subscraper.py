@@ -12,22 +12,28 @@ from yt_dlp import YoutubeDL
 @hydra.main(version_base=None, config_path="conf", config_name="config")
 def main(cfg: DictConfig) -> None:
     output_path = Path(cfg.scraper.output_folder)
-    output_path.mkdir(exist_ok=True)
+    output_path.mkdir(exist_ok=True, parents=True)
     tmp_path = output_path / 'tmp'
 
     urls_path = Path(cfg.search.output_folder) / cfg.search.result_file
-    with open(urls_path) as f:
-        urls = list(dict.fromkeys(s.strip() for s in f.readlines()))
+    try:
+        with open(urls_path) as f:
+            urls = list(dict.fromkeys(s.strip() for s in f.readlines()))
+    except FileNotFoundError:
+        logger.error(f'Urls file not found: {urls_path}')
+        return
+
+    audio_format: str = cfg.scraper.audio_format
+    download_lvl: str = cfg.scraper.lvl
 
     ydl_opts = {
-        # 'subtitleslangs': ['ru'],
-        # 'writesubtitles': True,
         'chapter': True,
         'format': 'm4a/bestaudio/best',
-        # 'postprocessors': [{  # Extract audio using ffmpeg
-        #     'key': 'FFmpegExtractAudio',
-        #     'preferredcodec': 'm4a',
-        # }]
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': f'{audio_format}',
+            # 'preferredquality': '10',
+        }],
         'paths': dict(home=str(tmp_path)),
         'outtmpl': 'audio.%(ext)s'
     }
@@ -41,7 +47,7 @@ def main(cfg: DictConfig) -> None:
             video_id = video_info['id']
             path = output_path / video_id
             if path.exists():
-                logger.warning(f'Video {video_info.get("id")} downloaded. Skipping.')
+                logger.warning(f'Audio {video_info.get("id")} downloaded. Skipping.')
                 continue
 
             chapters = video_info['chapters']
@@ -75,7 +81,8 @@ def main(cfg: DictConfig) -> None:
             subs = requests.get(subs_link).json()
             json.dump(subs, open(tmp_path / 'subs.json', 'w', encoding='utf8'), ensure_ascii=False)
 
-            ydl.download(url)
+            if download_lvl != 'text':
+                ydl.download(url)
 
             shutil.move(tmp_path, path)
 

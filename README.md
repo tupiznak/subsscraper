@@ -1,4 +1,4 @@
-SubScraper
+SubsScraper
 ---------
 
 Run command for generate urls
@@ -11,6 +11,8 @@ search 'search.query="лекции таймкоды"' search.cnt=2 # override cy
 Run command for subscrape urls
 ```commandline
 subscrape
+search scraper.audio_format=mp3 # convert to audio format
+search scraper.lvl=text # download only text
 ```
 
 Default configs
@@ -23,5 +25,7 @@ search:
 
 scraper:
   output_folder: ${search.output_folder}/dataset
+  audio_format: m4a
+  lvl: audio # text, audio, video
 ```
 
